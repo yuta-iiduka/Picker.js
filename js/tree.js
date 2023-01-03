@@ -143,12 +143,15 @@ class TreeObject extends Tree{
 	
 	constructor(id){
 		super();
-		this.jquery_obj = $("#"+id);
+		this.border_default_color = "border border-primary"
+		this.border_clicked_color = "border border-warning"
+		this.jquery_obj = $("#"+id).addClass(this.border_default_color);
 		this.collider = new Collider()
 						.set_jquery_obj(this.jquery_obj)
 						.set_collider()
 						.set_frame()
 						.set_button();
+		this.set_draw_event();
 		TreeObject.list.push(this);
 	}
 	
@@ -157,10 +160,62 @@ class TreeObject extends Tree{
 		return this;
 	}
 	
+	//説明：①子TreeObjectオブジェクトのセッター
+	//　　　②クリック時のイベント（子->親の可視化）を付与する
+	//引数：Treeオブジェクトもしくはそのサブクラスオブジェクト
+	//戻値：自インスタンス
 	set_child(t){
 		super.set_child(t);
+		let self = this;
+		let cls = this.border_clicked_color
+		let def = this.border_default_color
+		if (t.jquery_obj != undefined ){
+			t.jquery_obj.mousedown(function(e){
+				self.jquery_obj.removeClass(def);
+				self.jquery_obj.addClass(cls);
+				if(t.jquery_obj != undefined){
+					t.jquery_obj.removeClass(def);
+					t.jquery_obj.addClass(cls);
+				}
+			});
+			t.jquery_obj.mouseup(function(e){
+				self.jquery_obj.removeClass(cls);
+				self.jquery_obj.addClass(def);
+				if(t.jquery_obj != undefined){
+					t.jquery_obj.removeClass(cls);
+					t.jquery_obj.addClass(def);
+				}
+			});
+		}
 	}
 	
+	//説明：TreeObjectオブジェクトのクリック時イベント（親->子の可視化）を付与する
+	set_draw_event(){
+		let self = this;
+		let cls = this.border_clicked_color
+		let def = this.border_default_color
+		this.jquery_obj.mousedown(function(e){
+			self.jquery_obj.removeClass(def);
+			self.jquery_obj.addClass(cls);
+			for(let i=0; i<self.child.length; i++){
+				if(self.child[i].jquery_obj != undefined){
+					self.child[i].jquery_obj.removeClass(def);
+					self.child[i].jquery_obj.addClass(cls);
+				}
+			}
+		});
+		
+		this.jquery_obj.mouseup(function(e){
+			self.jquery_obj.removeClass(cls);
+			self.jquery_obj.addClass(def);
+			for(let i=0; i<self.child.length; i++){
+				if(self.child[i].jquery_obj != undefined){
+					self.child[i].jquery_obj.removeClass(cls);
+					self.child[i].jquery_obj.addClass(def);
+				}
+			}
+		});
+	}
 }
 
 // ■Gridクラスは以下の機能を提供します
@@ -173,6 +228,7 @@ class Grid{
 		this.w = w;
 		this.h = h;
 		this.jquery_obj_list = [];
+		this.grid_
 		this.x_list = this.set_gridX();
 		this.y_list = this.set_gridY();
 		this.body = $("body");
