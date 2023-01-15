@@ -291,5 +291,12 @@ class Grid{
 			}
 		});
 	}
+	
+	draw(){
+		this.body.css("background-size",this.w + "px " + this.h + "px")
+				.css("background-position","0% 0%")
+				.css("background-image","repeating-linear-gradient(90deg,#000,#000 1px,transparent 1px,transparent "+this.w+"px),repeating-linear-gradient(0deg,#000,#000 1px,transparent 1px,transparent "+this.h+"px)")
+		return this;
+	}
 }
 
