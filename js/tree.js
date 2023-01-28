@@ -227,12 +227,14 @@ class Grid{
 	constructor(w,h){
 		this.w = w;
 		this.h = h;
+		this.window_w = window.innerWidth;
+		this.window_h = window.innerHeight;
 		this.jquery_obj_list = [];
-		this.grid_
 		this.x_list = this.set_gridX();
 		this.y_list = this.set_gridY();
 		this.body = $("body");
 		this.set_grid_event();
+		//this.set_resize_event();
 		this.active = false;
 	}
 	
@@ -269,19 +271,30 @@ class Grid{
 					let obj = self.jquery_obj_list[i];
 					let grid_x = obj.offset()["left"] - (obj.offset()["left"] % self.w);
 					let grid_y = obj.offset()["top"]  - (obj.offset()["top"] % self.h);
-					let grid_w = obj.width()  - (obj.width()  % self.w);
-					let grid_h = obj.height() - (obj.height() % self.h);
+					let remaining_w = obj.width() % self.w;
+					let remaining_h = obj.height() % self.h;
+					let grid_w = obj.width()  - remaining_w;
+					let grid_h = obj.height() - remaining_h;
+					
 					
 					//グリッド横幅
 					if (grid_w > self.w){
-						obj.width(grid_w);
+						if(remaining_w < self.w / 2){
+							obj.width(grid_w);
+						}else{
+							obj.width(grid_w + self.w);
+						}
 					}else{
 						obj.width(self.w * 2);
 					}
 					
 					//グリッド縦幅
 					if (grid_h > self.h){
-						obj.height(grid_h);
+						if(remaining_h < self.h / 2){
+							obj.height(grid_h);
+						}else{
+							obj.height(grid_h + self.h)
+						}
 					}else{
 						obj.height(self.h * 2);
 					}
@@ -290,6 +303,22 @@ class Grid{
 				}
 			}
 		});
+		return this;
+	}
+	
+	set_resize_event(){
+		let self = this;
+		window.addEventListener("resize",function(e){
+			if (self.active == true){
+				let window_w = window.innerWidth;
+				let window_h = window.innerHeight;
+				self.w = self.w * window_w / self.window_w;
+				self.h = self.h * window_h / self.window_h;
+				self.draw();
+			};
+			
+		});
+		return this;
 	}
 	
 	draw(){
