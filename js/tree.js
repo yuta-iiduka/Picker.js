@@ -129,7 +129,6 @@ class Tree{
 		this.set_route();
 		return Tree.route;
 	}
-
 }
 
 
@@ -225,8 +224,10 @@ class TreeObject extends Tree{
 
 class Grid{
 	constructor(w,h){
-		this.w = w;
-		this.h = h;
+		this.w = parseInt(w);
+		this.h = parseInt(h);
+		this.def_w = parseInt(w);
+		this.def_h = parseInt(h);
 		this.window_w = window.innerWidth;
 		this.window_h = window.innerHeight;
 		this.jquery_obj_list = [];
@@ -234,13 +235,16 @@ class Grid{
 		this.y_list = this.set_gridY();
 		this.body = $("body");
 		this.set_grid_event();
-		//this.set_resize_event();
-		this.active = false;
+		this.set_resize_event();
+		this.active = true;
 	}
 	
 	set_jquery_obj(jquery_obj){
 		let self = this;
-		this.jquery_obj_list.push(jquery_obj);
+		jquery_obj.width(self.w * 2);
+		jquery_obj.height(self.h * 2);
+		jquery_obj.offset({"top":self.h,"left":self.w});
+		this.jquery_obj_list.push({"obj":jquery_obj,"w":jquery_obj.width(),"h":jquery_obj.height(),"top":jquery_obj.offset()["top"],"left":jquery_obj.offset()["left"],"x":parseInt(jquery_obj.offset()["left"]/self.w),"y":parseInt(jquery_obj.offset()["top"]/self.h)});
 		jquery_obj.click(function(){
 			self.active = true;
 		});
@@ -268,15 +272,19 @@ class Grid{
 		this.body.mouseup(function(e){
 			if (self.active == true){
 				for(let i=0; i<self.jquery_obj_list.length; i++){
-					let obj = self.jquery_obj_list[i];
+					let obj = self.jquery_obj_list[i].obj;
 					let grid_x = obj.offset()["left"] - (obj.offset()["left"] % self.w);
-					let grid_y = obj.offset()["top"]  - (obj.offset()["top"] % self.h);
+					if(obj.offset()["left"] % self.w > self.w / 2){
+						grid_x = obj.offset()["left"] - (obj.offset()["left"] % self.w) + self.w;
+					}
+					let grid_y = obj.offset()["top"]  - (obj.offset()["top"]  % self.h);
+					if(obj.offset()["top"] % self.h > self.h / 2){
+						grid_y = obj.offset()["top"] - (obj.offset()["top"] % self.h) + self.h;
+					}
 					let remaining_w = obj.width() % self.w;
 					let remaining_h = obj.height() % self.h;
 					let grid_w = obj.width()  - remaining_w;
 					let grid_h = obj.height() - remaining_h;
-					
-					
 					//グリッド横幅
 					if (grid_w > self.w){
 						if(remaining_w < self.w / 2){
@@ -300,6 +308,12 @@ class Grid{
 					}
 					//グリッド座標
 					obj.offset({"top":grid_y,"left":grid_x});
+					self.jquery_obj_list[i].w    = parseInt(obj.width()  / self.w);
+					self.jquery_obj_list[i].h    = parseInt(obj.height() / self.h);
+					self.jquery_obj_list[i].top  = grid_y;
+					self.jquery_obj_list[i].left = grid_x;
+					self.jquery_obj_list[i].x    = parseInt(obj.offset()["left"] / self.w);
+					self.jquery_obj_list[i].y    = parseInt(obj.offset()["top"]  / self.h);
 				}
 			}
 		});
@@ -312,11 +326,23 @@ class Grid{
 			if (self.active == true){
 				let window_w = window.innerWidth;
 				let window_h = window.innerHeight;
-				self.w = self.w * window_w / self.window_w;
-				self.h = self.h * window_h / self.window_h;
+				let ratio_width  = window_w / self.window_w;
+				let ratio_height = window_h / self.window_h;
+				
+				self.w = parseInt(self.def_w * ratio_width);
+				self.h = parseInt(self.def_h * ratio_height);
+				for(let i=0; i<self.jquery_obj_list.length; i++){
+					let obj = self.jquery_obj_list[i].obj;
+					let obj_top  = self.jquery_obj_list[i].y * self.h;
+					let obj_left = self.jquery_obj_list[i].x * self.w;
+					let obj_h    = self.jquery_obj_list[i].h * self.h;
+					let obj_w    = self.jquery_obj_list[i].w * self.w; 
+					obj.width(obj_w);
+					obj.height(obj_h);
+					obj.offset({"top":obj_top,"left":obj_left});
+				}
 				self.draw();
 			};
-			
 		});
 		return this;
 	}
