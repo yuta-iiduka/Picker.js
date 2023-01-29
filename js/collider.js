@@ -264,14 +264,24 @@ class Collider{
 	set_button(){
 		let self = this;
 		//this.jquery_obj.attr("contenteditable","true");
-		this.jquery_obj.prepend('<span><i id="settings' + this.id + '" class="bi bi-gear-fill"></i></span>');
-		let btn = $("#settings" + this.id)
+		this.jquery_obj.prepend('<div class="d-flex flex-row-reverse bd-highlight"><span><i id="settings' + this.id + '" class="bi bi-gear-fill"></i><i id="settings_ok' + this.id + '" class="bi bi-check-circle-fill"></i></span></div>');
+		let btn = $("#settings" + this.id);
+		let btn_ok = $("#settings_ok" + this.id)
 		btn.css("cursor","pointer")
-			.css("position","relative")
-			//.offset({"top":btn.offset()["top"],"left":btn.offset()["left"]+this.jquery_obj.width() - 16});
+			.css("position","relative");
+		btn_ok.css("cursor","pointer")
+			.css("position","relative");
 		btn.click(function(){
-			self.change_mode()
+			self.change_mode();
+			btn.css("display","none");
+			btn_ok.css("di	splay","inline-block");
 		});
+		btn_ok.click(function(){
+			self.change_mode();
+			btn.css("display","inline-block");
+			btn_ok.css("display","none");
+		});
+		btn_ok.css("display","none");
 		return this;
 	}
 }
