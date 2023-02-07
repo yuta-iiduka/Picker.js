@@ -274,7 +274,7 @@ class Collider{
 		btn.click(function(){
 			self.change_mode();
 			btn.css("display","none");
-			btn_ok.css("di	splay","inline-block");
+			btn_ok.css("display","inline-block");
 		});
 		btn_ok.click(function(){
 			self.change_mode();

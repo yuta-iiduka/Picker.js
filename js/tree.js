@@ -270,54 +270,59 @@ class Grid{
 	set_grid_event(){
 		let self = this;
 		this.body.mouseup(function(e){
-			if (self.active == true){
-				for(let i=0; i<self.jquery_obj_list.length; i++){
-					let obj = self.jquery_obj_list[i].obj;
-					let grid_x = obj.offset()["left"] - (obj.offset()["left"] % self.w);
-					if(obj.offset()["left"] % self.w > self.w / 2){
-						grid_x = obj.offset()["left"] - (obj.offset()["left"] % self.w) + self.w;
-					}
-					let grid_y = obj.offset()["top"]  - (obj.offset()["top"]  % self.h);
-					if(obj.offset()["top"] % self.h > self.h / 2){
-						grid_y = obj.offset()["top"] - (obj.offset()["top"] % self.h) + self.h;
-					}
-					let remaining_w = obj.width() % self.w;
-					let remaining_h = obj.height() % self.h;
-					let grid_w = obj.width()  - remaining_w;
-					let grid_h = obj.height() - remaining_h;
-					//グリッド横幅
-					if (grid_w > self.w){
-						if(remaining_w < self.w / 2){
-							obj.width(grid_w);
-						}else{
-							obj.width(grid_w + self.w);
-						}
-					}else{
-						obj.width(self.w * 2);
-					}
-					
-					//グリッド縦幅
-					if (grid_h > self.h){
-						if(remaining_h < self.h / 2){
-							obj.height(grid_h);
-						}else{
-							obj.height(grid_h + self.h)
-						}
-					}else{
-						obj.height(self.h * 2);
-					}
-					//グリッド座標
-					obj.offset({"top":grid_y,"left":grid_x});
-					self.jquery_obj_list[i].w    = parseInt(obj.width()  / self.w);
-					self.jquery_obj_list[i].h    = parseInt(obj.height() / self.h);
-					self.jquery_obj_list[i].top  = grid_y;
-					self.jquery_obj_list[i].left = grid_x;
-					self.jquery_obj_list[i].x    = parseInt(obj.offset()["left"] / self.w);
-					self.jquery_obj_list[i].y    = parseInt(obj.offset()["top"]  / self.h);
-				}
-			}
+			self.fit(e);
 		});
 		return this;
+	}
+	
+	fit(e){
+		let self = this;
+		if (self.active == true){
+			for(let i=0; i<self.jquery_obj_list.length; i++){
+				let obj = self.jquery_obj_list[i].obj;
+				let grid_x = obj.offset()["left"] - (obj.offset()["left"] % self.w);
+				if(obj.offset()["left"] % self.w > self.w / 2){
+					grid_x = obj.offset()["left"] - (obj.offset()["left"] % self.w) + self.w;
+				}
+				let grid_y = obj.offset()["top"]  - (obj.offset()["top"]  % self.h);
+				if(obj.offset()["top"] % self.h > self.h / 2){
+					grid_y = obj.offset()["top"] - (obj.offset()["top"] % self.h) + self.h;
+				}
+				let remaining_w = obj.width() % self.w;
+				let remaining_h = obj.height() % self.h;
+				let grid_w = obj.width()  - remaining_w;
+				let grid_h = obj.height() - remaining_h;
+				//グリッド横幅
+				if (grid_w > self.w){
+					if(remaining_w < self.w / 2){
+						obj.width(grid_w);
+					}else{
+						obj.width(grid_w + self.w);
+					}
+				}else{
+					obj.width(self.w * 2);
+				}
+				
+				//グリッド縦幅
+				if (grid_h > self.h){
+					if(remaining_h < self.h / 2){
+						obj.height(grid_h);
+					}else{
+						obj.height(grid_h + self.h)
+					}
+				}else{
+					obj.height(self.h * 2);
+				}
+				//グリッド座標
+				obj.offset({"top":grid_y,"left":grid_x});
+				self.jquery_obj_list[i].w    = parseInt(obj.width()  / self.w);
+				self.jquery_obj_list[i].h    = parseInt(obj.height() / self.h);
+				self.jquery_obj_list[i].top  = grid_y;
+				self.jquery_obj_list[i].left = grid_x;
+				self.jquery_obj_list[i].x    = parseInt(obj.offset()["left"] / self.w);
+				self.jquery_obj_list[i].y    = parseInt(obj.offset()["top"]  / self.h);
+			}
+		}
 	}
 	
 	set_resize_event(){
@@ -347,10 +352,14 @@ class Grid{
 		return this;
 	}
 	
+	reposition(jquery_obj,top,left,height,width){
+		jquery_obj.offset({"top":top * this.h,"left":left * this.w}).height(height * this.h).width(width * this.w);
+	}
+	
 	draw(){
 		this.body.css("background-size",this.w + "px " + this.h + "px")
 				.css("background-position","0% 0%")
-				.css("background-image","repeating-linear-gradient(90deg,#000,#000 1px,transparent 1px,transparent "+this.w+"px),repeating-linear-gradient(0deg,#000,#000 1px,transparent 1px,transparent "+this.h+"px)")
+				.css("background-image","repeating-linear-gradient(90deg,#555,#555 1px,transparent 1px,transparent "+this.w+"px),repeating-linear-gradient(0deg,#555,#555 1px,transparent 1px,transparent "+this.h+"px)")
 		return this;
 	}
 }
