@@ -236,6 +236,7 @@ class Grid{
 		this.body = $("body");
 		this.set_grid_event();
 		this.set_resize_event();
+		this.draw()
 		this.active = true;
 	}
 	
