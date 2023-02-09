@@ -27,6 +27,7 @@ class Collider{
 		this.resize_l = false;		//X方向リサイズ判定
 		this.resize_r = false;		//X方向リサイズ判定
 		this.resize_y = false;		//Y方向リサイズ判定
+		this.z_index = Collider.cnt;
 		Collider.list.push(this);
 		Collider.cnt++;
 	}
@@ -36,6 +37,7 @@ class Collider{
 	//戻値：自インスタンス
 	set_jquery_obj(jquery_obj){
 		this.jquery_obj = jquery_obj;
+		this.jquery_obj.css("z-index",this.z_index);
 		return this;
 	}
 	
@@ -55,6 +57,7 @@ class Collider{
 				self.move = true;
 				wid = e.pageX - self.jquery_obj.offset()["left"];
 				hei = e.pageY - self.jquery_obj.offset()["top"];
+				self.focus();
 			}
 		});
 		this.body.mousemove(function(e){
@@ -283,5 +286,17 @@ class Collider{
 		});
 		btn_ok.css("display","none");
 		return this;
+	}
+	
+	focus(){
+		let z_index = 1;
+		for (let i=0; i<Collider.list.length; i++){
+			let target = Collider.list[i].z_index;
+			if(z_index < target){
+				z_index = target;
+			}
+		}
+		this.z_index = z_index + 1;
+		this.jquery_obj.css("z-index",this.z_index);
 	}
 }

@@ -224,12 +224,16 @@ class TreeObject extends Tree{
 
 class Grid{
 	constructor(w,h){
-		this.w = parseInt(w);
-		this.h = parseInt(h);
-		this.def_w = parseInt(w);
-		this.def_h = parseInt(h);
 		this.window_w = window.innerWidth;
 		this.window_h = window.innerHeight;
+		this.default_window_w = 1980;
+		this.default_window_h = 1020;
+		let ratio_w = this.window_w / this.default_window_w;
+		let ratio_h = this.window_h / this.default_window_h;
+		this.w = parseInt(w * ratio_w);
+		this.h = parseInt(h * ratio_h);
+		this.def_w = parseInt(w * ratio_w);
+		this.def_h = parseInt(h * ratio_h);
 		this.jquery_obj_list = [];
 		this.x_list = this.set_gridX();
 		this.y_list = this.set_gridY();
