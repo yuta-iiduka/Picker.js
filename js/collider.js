@@ -22,12 +22,14 @@ class Collider{
 		this.id   = Collider.cnt;
 		this.body = $("body");;
 		this.jquery_obj = null;
+		this.title = "";
 		this.active = false;		//Colliderの有効・無効
 		this.move = false;			//移動判定
 		this.resize_l = false;		//X方向リサイズ判定
 		this.resize_r = false;		//X方向リサイズ判定
 		this.resize_y = false;		//Y方向リサイズ判定
 		this.z_index = Collider.cnt;
+		if(this.id == 0){Collider.set_contextmenu()}
 		Collider.list.push(this);
 		Collider.cnt++;
 	}
@@ -264,12 +266,28 @@ class Collider{
 	//説明：Collider機能のONOFFボタン
 	//引数：なし
 	//戻値：なし
-	set_button(){
+	set_button(close){
 		let self = this;
 		//this.jquery_obj.attr("contenteditable","true");
-		this.jquery_obj.prepend('<div class="d-flex flex-row-reverse bd-highlight"><span><i id="settings' + this.id + '" class="bi bi-gear-fill"></i><i id="settings_ok' + this.id + '" class="bi bi-check-circle-fill"></i></span></div>');
+		let open_btn_html = '<div id="settings_open' + this.id + '">' + this.title + '<i class="bi bi-eye-fill"></i></div>'
+		let prepend_html = '';
+		prepend_html = '<div id="settings_header' + this.id + '" ><div>' + this.title + '</div><div><span><i id="settings' + this.id + '" class="bi bi-gear-fill"></i><i id="settings_ok' + this.id + '" class="bi bi-check-circle-fill"></i></span></div></div>';
+		if(close == true){
+			prepend_html = '<div id="settings_header' + this.id + '" ><div>' + this.title + '</div><div><span><i id="settings' + this.id + '" class="bi bi-gear-fill"></i><i id="settings_ok' + this.id + '" class="bi bi-check-circle-fill"></i></span><span><i id="settings_close' + this.id + '" class="bi bi-x-lg"></i></span></div></div>';
+			$("#contextmenu").append(open_btn_html);
+		}
+		this.jquery_obj.prepend(prepend_html);
+		this.jquery_obj.css("overflow-y","auto")
+						.css("overflow-x","auto")
+		let settings_header = $("#settings_header" + this.id);
+		settings_header.css("justify-content","space-between")
+						.css("display","flex")
+						.css("font-weight","bold")
+						.css("font","small")
+						.css("border-bottom","solid 0.5px #555");
 		let btn = $("#settings" + this.id);
-		let btn_ok = $("#settings_ok" + this.id)
+		let btn_ok = $("#settings_ok" + this.id);
+
 		btn.css("cursor","pointer")
 			.css("position","relative");
 		btn_ok.css("cursor","pointer")
@@ -284,8 +302,43 @@ class Collider{
 			btn.css("display","inline-block");
 			btn_ok.css("display","none");
 		});
+		
+		if(close == true){
+			let btn_close = $("#settings_close" + this.id);
+			let btn_open = $("#settings_open" + this.id);
+			btn_close.click(function(){
+				self.jquery_obj.css("display","none");
+				btn_open.css("display","block");
+			});
+			btn_open.click(function(){
+				self.jquery_obj.css("display","inline-block");
+				btn_open.css("display","none");
+			});
+			btn_open.css("display","none");			
+		}
 		btn_ok.css("display","none");
 		return this;
+	}
+	
+	set_title(title){
+		let btn_open = $("#settings_open" + this.id);
+		btn_open.text(title);
+		this.title = title;
+		return this;
+	}
+	
+	static set_contextmenu(){
+		let self = this;
+		$("body").append('<div id="contextmenu" style="background-color: white; font-size: small; position: relative;">再表示</div>');
+		$("body").contextmenu(function(e){
+			$("#contextmenu").css("display","inline-block")
+							.offset({"top":e.clientY,"left":e.clientX});
+			e.preventDefault();
+		});
+		$("body").click(function(){
+			$("#contextmenu").css("display","none");
+		});
+		$("#contextmenu").css("display","none");
 	}
 	
 	focus(){

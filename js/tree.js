@@ -145,11 +145,18 @@ class TreeObject extends Tree{
 		this.border_default_color = "border border-primary"
 		this.border_clicked_color = "border border-warning"
 		this.jquery_obj = $("#"+id).addClass(this.border_default_color);
+		let title = ""
+		if(this.jquery_obj.text().length > 16){
+			title = this.jquery_obj.text().substr(0,16) + "…";
+		}else{
+			title = this.jquery_obj.text();
+		}
 		this.collider = new Collider()
 						.set_jquery_obj(this.jquery_obj)
 						.set_collider()
 						.set_frame()
-						.set_button();
+						.set_title(title)
+						.set_button(true);
 		this.set_draw_event();
 		TreeObject.list.push(this);
 	}
@@ -366,6 +373,15 @@ class Grid{
 				.css("background-position","0% 0%")
 				.css("background-image","repeating-linear-gradient(90deg,#555,#555 1px,transparent 1px,transparent "+this.w+"px),repeating-linear-gradient(0deg,#555,#555 1px,transparent 1px,transparent "+this.h+"px)")
 		return this;
+	}
+}
+
+//■Linkオブジェクトは以下の機能を提供します
+//マウス操作による親子関係の生成
+
+class Link extends TreeObject{
+	constructor(){
+		console.log("link is called.");
 	}
 }
 
